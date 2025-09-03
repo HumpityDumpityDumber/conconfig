@@ -1,0 +1,13 @@
+    [<folder> helix|
+      [<file>config.toml|
+        [<node>theme] --> [<value>"base16_terminal"]
+
+        [<node>editor|
+        [<node>line-number] --> [<value>"absolute"]
+
+        [<node>mouse] --> [<value>true]
+
+        [<node>clipboard-provider] --> [<value>wayland]
+        ]
+      ]
+    ]

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NOML Diagram Viewer</title>
+    <style>
+        body {
+            font-family: "Irish Baby Rifleman Rounded", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .diagram-container {
+            text-align: center;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fafafa;
+        }
+        svg {
+            max-width: 100%;
+            height: auto;
+        }
+        .stop-btn {
+            display: inline-block;
+            margin: 0 10px;
+            padding: 10px 20px;
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .stop-btn:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>NOML Diagram: {{FILENAME}} <span id="status" style="font-size: 14px; color: #28a745;">● Live</span></h1>
+        <div style="text-align: center; margin-bottom: 20px;">
+            <button class="stop-btn" onclick="stopServer()">Stop Server</button>
+        </div>
+        <div class="diagram-container">
+            {{SVG_CONTENT}}
+        </div>
+    </div>
+    <script>
+        let isChecking = false;
+        
+        // Check for updates every 2 seconds
+        async function checkForUpdates() {
+            if (isChecking) return;
+            isChecking = true;
+            
+            try {
+                const response = await fetch('/check-update');
+                const data = await response.json();
+                
+                if (data.updated) {
+                    // Update status to show refreshing
+                    document.getElementById('status').innerHTML = '<span style="color: #ffc107;">● Refreshing...</span>';
+                    
+                    // Reload the page
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    // Update status to show live
+                    document.getElementById('status').innerHTML = '<span style="color: #28a745;">● Live</span>';
+                }
+            } catch (error) {
+                console.log('Error checking for updates:', error);
+                document.getElementById('status').innerHTML = '<span style="color: #dc3545;">● Disconnected</span>';
+            }
+            
+            isChecking = false;
+        }
+        
+        // Start checking for updates
+        setInterval(checkForUpdates, 2000);
+        
+        async function stopServer() {
+            try {
+                // Send shutdown request to server
+                await fetch('/shutdown', { method: 'POST' });
+                // Close the current tab
+                window.close();
+                // If window.close() doesn't work (security restrictions), show message
+                setTimeout(() => {
+                    document.body.innerHTML = '<div style="text-align: center; padding: 50px; font-size: 24px; color: #666;">Server stopped. You can close this tab.</div>';
+                }, 100);
+            } catch (error) {
+                console.log('Server already stopped');
+                window.close();
+            }
+        }
+    </script>
+</body>
+</html>

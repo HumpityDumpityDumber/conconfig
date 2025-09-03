@@ -1,0 +1,11 @@
+#.type: direction=right
+
+[<type> kdl|
+	[indent]->
+    	[tab]
+]
+
+[<type> toml|
+	[indent]->
+    	[tab]
+]

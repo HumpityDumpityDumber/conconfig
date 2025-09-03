@@ -1,0 +1,14 @@
+#.file: visual=note title=left direction=right
+#.folder: visual=package title=left direction=down
+#.value: visual=none
+#.node: bold direction=right
+#.value
+
+
+[<folder> home|
+  [<folder> .config|
+    #import: niri.noml
+    
+	  #import: helix.noml
+  ]
+]
